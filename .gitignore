@@ -1,0 +1,14 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
+# AWS
+.aws/
+
+# Docker
+*.tar
+
+# Environment files
+.env
