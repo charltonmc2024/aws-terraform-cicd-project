@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+
+  install:
+    commands:
+      - echo Build phase started
+
+  build:
+    commands:
+      - echo Checking Terraform files
+      - cd terraform
+      - terraform fmt -check
+      - cd ..
+
+      - echo Checking application files
+      - ls application
+
+
+artifacts:
+  files:
+    - '**/*'

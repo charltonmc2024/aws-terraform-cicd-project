@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+
+  install:
+    commands:
+      - echo Terraform deployment
+      - terraform version
+
+  pre_build:
+    commands:
+      - cd terraform
+      - terraform init
+
+  build:
+    commands:
+      - terraform plan
+
+  post_build:
+    commands:
+      - terraform apply -auto-approve
