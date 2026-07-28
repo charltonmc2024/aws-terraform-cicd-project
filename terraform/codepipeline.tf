@@ -1,6 +1,6 @@
 resource "aws_codepipeline" "nginx" {
 
-  name     = "${var.app_name}-pipeline"
+  name     = "${var.app_name}-CodePipeline"
   role_arn = aws_iam_role.codepipeline_role.arn
 
   artifact_store {
