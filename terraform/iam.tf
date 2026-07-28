@@ -132,6 +132,14 @@ resource "aws_iam_role_policy_attachment" "codepipeline_policy" {
 
   role = aws_iam_role.codepipeline_role.name
 
-  policy_arn = "arn:aws:iam::aws:policy/AWSCodePipelineFullAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCodePipeline_FullAccess"
+
+}
+
+resource "aws_iam_role_policy_attachment" "codepipeline_s3_policy" {
+
+  role = aws_iam_role.codepipeline_role.name
+
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 
 }
