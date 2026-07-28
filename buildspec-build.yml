@@ -1,21 +1,35 @@
 version: 0.2
 
+env:
+  variables:
+    AWS_REGION: us-east-1
+    ECR_REPOSITORY_URI: 691778449106.dkr.ecr.us-east-1.amazonaws.com/nginx-app-repo
+
 phases:
 
   install:
     commands:
-      - echo Build phase started
+      - echo Installing dependencies
+      - docker --version
+
+  pre_build:
+    commands:
+      - echo Logging into Amazon ECR
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
 
   build:
     commands:
-      - echo Checking Terraform files
-      - cd terraform
-      - terraform fmt -check
-      - cd ..
+      - echo Building Docker image
+      - cd application
+      - docker build -t nginx-app .
 
-      - echo Checking application files
-      - ls application
+      - echo Tagging image
+      - docker tag nginx-app:latest $ECR_REPOSITORY_URI:latest
 
+  post_build:
+    commands:
+      - echo Pushing image to ECR
+      - docker push $ECR_REPOSITORY_URI:latest
 
 artifacts:
   files:
