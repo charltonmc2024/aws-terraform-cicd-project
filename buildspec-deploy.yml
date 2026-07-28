@@ -1,10 +1,9 @@
 version: 0.2
 
 phases:
-
   install:
     commands:
-      - echo Terraform deployment
+      - echo "Starting deployment"
       - terraform version
 
   pre_build:
@@ -14,8 +13,8 @@ phases:
 
   build:
     commands:
-      - terraform plan
+      - terraform plan -out=tfplan
 
   post_build:
     commands:
-      - terraform apply -auto-approve
+      - terraform apply -auto-approve tfplan

@@ -50,48 +50,13 @@ resource "aws_iam_role" "ecs_task_role" {
   })
 }
 
-resource "aws_iam_role" "codebuild_role" {
+##################################
+# Elastic Beanstalk EC2 Role
+##################################
 
-  name = "${var.app_name}-codebuild-role"
+resource "aws_iam_role" "eb_ec2_role" {
 
-
-  assume_role_policy = jsonencode({
-
-    Version = "2012-10-17"
-
-    Statement = [
-      {
-        Effect = "Allow"
-
-        Principal = {
-          Service = "codebuild.amazonaws.com"
-        }
-
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-}
-
-
-resource "aws_iam_role_policy_attachment" "codebuild_policy" {
-
-  role = aws_iam_role.codebuild_role.name
-
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
-}
-
-
-resource "aws_iam_role_policy_attachment" "codebuild_logs" {
-
-  role = aws_iam_role.codebuild_role.name
-
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-}
-
-resource "aws_iam_role" "codepipeline_role" {
-
-  name = "${var.app_name}-codepipeline-role"
+  name = "${var.app_name}-elasticbeanstalk-ec2-role"
 
 
   assume_role_policy = jsonencode({
@@ -99,49 +64,41 @@ resource "aws_iam_role" "codepipeline_role" {
     Version = "2012-10-17"
 
     Statement = [
+
       {
+
         Effect = "Allow"
 
         Principal = {
-          Service = "codepipeline.amazonaws.com"
+
+          Service = "ec2.amazonaws.com"
+
         }
 
         Action = "sts:AssumeRole"
+
       }
+
     ]
+
   })
-}
 
-resource "aws_iam_policy" "codepipeline_policy" {
-
-  name = "${var.app_name}-codepipeline-policy"
-
-  policy = jsonencode({
-
-    Version = "2012-10-17"
-
-    Statement = [
-
-      {
-        Effect = "Allow"
-
-        Action = [
-          "s3:*",
-          "codebuild:StartBuild",
-          "codebuild:BatchGetBuilds"
-        ]
-
-        Resource = "*"
-      }
-    ]
-  })
 }
 
 
-resource "aws_iam_role_policy_attachment" "codepipeline_policy" {
+resource "aws_iam_role_policy_attachment" "eb_web_tier" {
 
-  role = aws_iam_role.codepipeline_role.name
+  role = aws_iam_role.eb_ec2_role.name
 
-  policy_arn = aws_iam_policy.codepipeline_policy.arn
+  policy_arn = "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier"
+
 }
 
+
+resource "aws_iam_instance_profile" "eb_ec2_profile" {
+
+  name = "${var.app_name}-elasticbeanstalk-ec2-profile"
+
+  role = aws_iam_role.eb_ec2_role.name
+
+}

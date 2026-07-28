@@ -4,11 +4,12 @@
 *.tfstate.*
 crash.log
 
-# AWS
-.aws/
-
-# Docker
-*.tar
+# Terraform plan files
+*.tfplan
 
 # Environment files
-.env
+*.tfvars
+
+# OS files
+.DS_Store
+Thumbs.db
