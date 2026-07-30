@@ -9,28 +9,56 @@ phases:
 
   install:
     commands:
-      - echo Installing dependencies
+      - echo Checking Docker
       - docker --version
+      - echo Checking zip
+      - zip --version
+
 
   pre_build:
     commands:
       - echo Logging into Amazon ECR
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
 
+
   build:
     commands:
+
       - echo Building Docker image
       - cd application
       - docker build -t nginx-app .
 
-      - echo Tagging image
+      - echo Tagging Docker image
       - docker tag nginx-app:latest $ECR_REPOSITORY_URI:latest
+
+      - echo Creating Elastic Beanstalk deployment file
+      - |
+        cat > Dockerrun.aws.json <<EOF
+        {
+          "AWSEBDockerrunVersion": "1",
+          "Image": {
+            "Name": "$ECR_REPOSITORY_URI:latest",
+            "Update": "true"
+          },
+          "Ports": [
+            {
+              "ContainerPort": "80"
+            }
+          ]
+        }
+        EOF
+
+      - zip deploy.zip Dockerrun.aws.json
+
 
   post_build:
     commands:
-      - echo Pushing image to ECR
+
+      - echo Pushing Docker image to ECR
       - docker push $ECR_REPOSITORY_URI:latest
 
+
 artifacts:
+
   files:
-    - '**/*'
+    - application/deploy.zip

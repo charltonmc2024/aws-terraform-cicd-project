@@ -100,10 +100,8 @@ resource "aws_codepipeline" "terraform_pipeline" {
       version = "1"
 
 
-      input_artifacts = [
-        "source_output"
-      ]
-
+      input_artifacts  = ["source_output"]
+      output_artifacts = ["test_output"]
 
       configuration = {
 
@@ -138,9 +136,7 @@ resource "aws_codepipeline" "terraform_pipeline" {
       version = "1"
 
 
-      input_artifacts = [
-        "source_output"
-      ]
+      input_artifacts = ["test_output"]
 
 
       output_artifacts = [
@@ -170,7 +166,7 @@ resource "aws_codepipeline" "terraform_pipeline" {
 
     action {
 
-      name = "Terraform_Deploy"
+      name = "ElasticBeanstalk_Deploy"
 
       category = "Build"
 
