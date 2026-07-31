@@ -6,7 +6,8 @@ phases:
   install:
     commands:
     - echo Installing dependencies
-    - yum install -y unzip wget
+    - apt-get update
+    - apt-get install -y unzip wget
 
     - echo Downloading Terraform
     - wget -O terraform.zip https://releases.hashicorp.com/terraform/1.14.4/terraform_1.14.4_linux_amd64.zip
@@ -20,7 +21,10 @@ phases:
 
     - mv terraform /usr/local/bin/
 
+    - echo Checking Terraform
     - terraform version
+
+    - echo Checking Docker
     - docker version
 
 
