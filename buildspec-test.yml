@@ -4,29 +4,24 @@ version: 0.2
 phases:
 
   install:
-   commands:
+    commands:
     - echo Installing dependencies
-    - yum install -y unzip curl || true
+    - yum install -y unzip wget
 
-    - echo Installing Terraform
-    - curl -fsSL https://releases.hashicorp.com/terraform/1.14.4/terraform_1.14.4_linux_amd64.zip -o terraform.zip
+    - echo Downloading Terraform
+    - wget -O terraform.zip https://releases.hashicorp.com/terraform/1.14.4/terraform_1.14.4_linux_amd64.zip
 
+    - echo Checking Terraform package
     - ls -lh terraform.zip
     - file terraform.zip
 
+    - echo Extracting Terraform
     - unzip -o terraform.zip
+
     - mv terraform /usr/local/bin/
 
-    - echo Checking Terraform
     - terraform version
-
-    - echo Checking Docker
     - docker version
-
-
-  pre_build:
-    commands:
-      - echo Starting Terraform validation
 
 
   build:
