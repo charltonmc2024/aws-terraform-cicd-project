@@ -42,11 +42,13 @@ variable "app_name" {
 variable "codestar_connection_arn" {
   description = "CodeStar Connection ARN"
   type        = string
+  default     = "arn:aws:codeconnections:us-east-1:691778449106:connection/35bf934c-7a7a-4223-8ecd-eb3168fd7934"
 }
 
 variable "github_repository" {
-  description = "GitHub repository (owner/repo)"
+  description = "GitHub repository (charltonmc2024/aws-terraform-cicd-project)"
   type        = string
+  default     = "charltonmc2024/aws-terraform-cicd-project"
 }
 
 variable "github_branch" {

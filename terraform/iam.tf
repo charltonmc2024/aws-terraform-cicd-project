@@ -136,6 +136,38 @@ resource "aws_iam_role_policy_attachment" "codepipeline_policy" {
 
 }
 
+resource "aws_iam_role_policy" "codepipeline_codestar_connection" {
+
+  name = "${var.app_name}-codestar-connection"
+
+  role = aws_iam_role.codepipeline_role.id
+
+  policy = jsonencode({
+
+    Version = "2012-10-17"
+
+    Statement = [
+
+      {
+
+        Effect = "Allow"
+
+        Action = [
+
+          "codestar-connections:UseConnection"
+
+        ]
+
+        Resource = var.codestar_connection_arn
+
+      }
+
+    ]
+
+  })
+
+}
+
 resource "aws_iam_role_policy_attachment" "codepipeline_s3_policy" {
 
   role = aws_iam_role.codepipeline_role.name
