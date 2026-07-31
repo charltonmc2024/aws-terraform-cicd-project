@@ -136,6 +136,44 @@ resource "aws_iam_role_policy_attachment" "codepipeline_policy" {
 
 }
 
+resource "aws_iam_role_policy" "codepipeline_codebuild" {
+
+  name = "${var.app_name}-codebuild-access"
+
+  role = aws_iam_role.codepipeline_role.id
+
+  policy = jsonencode({
+
+    Version = "2012-10-17"
+
+    Statement = [
+
+      {
+
+        Effect = "Allow"
+
+        Action = [
+
+          "codebuild:StartBuild",
+          "codebuild:BatchGetBuilds"
+
+        ]
+
+        Resource = [
+
+          aws_codebuild_project.test.arn,
+          aws_codebuild_project.build.arn,
+          aws_codebuild_project.deploy.arn
+
+        ]
+
+      }
+
+    ]
+
+  })
+
+}
 resource "aws_iam_role_policy" "codepipeline_codestar_connection" {
 
   name = "${var.app_name}-codestar-connection"
