@@ -4,16 +4,29 @@ phases:
 
   install:
     commands:
-      - echo Installing tools
+      - echo Installing Terraform
+      - curl -fsSL https://releases.hashicorp.com/terraform/1.14.4/terraform_1.14.4_linux_amd64.zip -o terraform.zip
+      - unzip terraform.zip
+      - mv terraform /usr/local/bin/
+
+      - echo Checking Terraform
       - terraform version
+
+      - echo Checking Docker
       - docker version
+
+
+  pre_build:
+    commands:
+      - echo Starting Terraform validation
+
 
   build:
     commands:
 
       - echo Testing Terraform
       - cd terraform
-      - terraform init
+      - terraform init -backend=false
       - terraform validate
       - cd ..
 
@@ -28,7 +41,9 @@ phases:
       - echo Testing website
       - curl http://localhost:8080
 
+
   post_build:
     commands:
-      - docker stop nginx-test
-      - docker rm nginx-test
+      - echo Cleaning up container
+      - docker stop nginx-test || true
+      - docker rm nginx-test || true
