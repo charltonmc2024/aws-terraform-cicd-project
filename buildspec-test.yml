@@ -39,6 +39,9 @@ phases:
       - terraform validate
       - cd ..
 
+      - echo Creating pipeline artifact
+      - printf 'Terraform validation completed successfully\n' > test-output.txt
+
       - echo Building Docker image
       - docker build -t nginx-test ./application
 
@@ -55,3 +58,7 @@ phases:
       - echo Cleaning up container
       - docker stop nginx-test || true
       - docker rm nginx-test || true
+
+artifacts:
+  files:
+    - test-output.txt
