@@ -17,7 +17,7 @@ phases:
 
       - echo Downloading Terraform
       - rm -f terraform.zip
-      - curl -fsSLo terraform.zip https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+      - curl -fsSLo terraform.zip -L "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
 
       - echo Verifying Terraform archive
       - unzip -t terraform.zip > /dev/null
