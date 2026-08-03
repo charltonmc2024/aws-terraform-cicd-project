@@ -1,6 +1,10 @@
 ---
 version: 0.2
 
+env:
+  variables:
+    TERRAFORM_VERSION: "1.14.4"
+
 phases:
   install:
     commands:
@@ -12,12 +16,17 @@ phases:
       - terraform --version || true
 
       - echo Downloading Terraform
-      - curl -L -o terraform.zip https://releases.hashicorp.com/terraform/1.14.4/terraform_1.14.4_linux_amd64.zip
+      - rm -f terraform.zip
+      - curl -fsSLo terraform.zip https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+      - echo Verifying Terraform archive
+      - unzip -t terraform.zip > /dev/null
 
       - echo Extracting Terraform
-      - unzip -o terraform.zip
-
-      - mv terraform /usr/local/bin/terraform
+      - rm -rf /tmp/terraform-bin
+      - mkdir -p /tmp/terraform-bin
+      - unzip -o terraform.zip -d /tmp/terraform-bin
+      - install -m 0755 /tmp/terraform-bin/terraform /usr/local/bin/terraform
 
       - terraform version
       - docker version
