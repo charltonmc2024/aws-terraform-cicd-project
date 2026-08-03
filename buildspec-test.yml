@@ -1,40 +1,30 @@
 ---
 version: 0.2
 
-env:
-  variables:
-    AWS_REGION: us-east-1
-
 phases:
   install:
     commands:
       - echo Installing dependencies
       - apt-get update
-      - apt-get install -y unzip curl file
+      - apt-get install -y unzip curl
+
+      - echo Checking Terraform
+      - terraform --version || true
 
       - echo Downloading Terraform
       - curl -L -o terraform.zip https://releases.hashicorp.com/terraform/1.14.4/terraform_1.14.4_linux_amd64.zip
 
-      - echo Checking Terraform package
-      - ls -lh terraform.zip
-      - file terraform.zip
-
-      - echo Testing Terraform zip
-      - unzip -t terraform.zip
-
       - echo Extracting Terraform
       - unzip -o terraform.zip
 
-      - echo Installing Terraform
-      - mv terraform /usr/local/bin/
+      - mv terraform /usr/local/bin/terraform
 
-      - echo Checking versions
       - terraform version
       - docker version
 
   build:
     commands:
-      - echo Testing Terraform configuration
+      - echo Testing Terraform
       - cd terraform
       - terraform init -backend=false
       - terraform validate
@@ -43,17 +33,16 @@ phases:
       - echo Building Docker image
       - docker build -t nginx-test ./application
 
-      - echo Starting NGINX container
-      - docker run -d -p 8080:80 --name nginx-test-container nginx-test
+      - echo Running NGINX container
+      - docker run -d -p 8080:80 --name nginx-test nginx-test
 
-      - echo Waiting for container
       - sleep 5
 
-      - echo Testing NGINX website
+      - echo Testing website
       - curl http://localhost:8080
 
   post_build:
     commands:
-      - echo Cleaning Docker container
-      - docker stop nginx-test-container || true
-      - docker rm nginx-test-container || true
+      - echo Cleaning up container
+      - docker stop nginx-test || true
+      - docker rm nginx-test || true
