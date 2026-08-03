@@ -32,7 +32,7 @@ resource "aws_codebuild_project" "test" {
 
     type = "CODEPIPELINE"
 
-    buildspec = "./buildspec-test.yml"
+    buildspec = file("${path.module}/../buildspec-test.yml")
 
   }
 
@@ -86,7 +86,7 @@ resource "aws_codebuild_project" "build" {
 
     type = "CODEPIPELINE"
 
-    buildspec = "./buildspec-build.yml"
+    buildspec = file("${path.module}/../buildspec-build.yml")
 
   }
 
@@ -147,7 +147,7 @@ resource "aws_codebuild_project" "deploy" {
 
     type = "CODEPIPELINE"
 
-    buildspec = "./buildspec-deploy.yml"
+    buildspec = file("${path.module}/../buildspec-deploy.yml")
 
   }
 
