@@ -5,24 +5,24 @@ phases:
 
   install:
     commands:
-    - echo Installing dependencies
-    - apt-get update
-    - apt-get install -y unzip wget file
+      - echo Installing dependencies
+      - apt-get update
+      - apt-get install -y unzip wget curl
 
-    - echo Downloading Terraform
-    - wget -O terraform.zip https://releases.hashicorp.com/terraform/1.14.4/terraform_1.14.4_linux_amd64.zip
+      - echo Downloading Terraform
+      - wget -q -O terraform.zip https://releases.hashicorp.com/terraform/1.14.4/terraform_1.14.4_linux_amd64.zip
 
-    - echo Checking downloaded file
-    - ls -lh terraform.zip
-    - file terraform.zip
+      - echo Checking Terraform package
+      - ls -lh terraform.zip
+      - unzip -t terraform.zip
 
-    - echo Extracting Terraform
-    - unzip -o terraform.zip
+      - echo Extracting Terraform
+      - unzip -o terraform.zip
 
-    - mv terraform /usr/local/bin/
+      - mv terraform /usr/local/bin/
 
-    - terraform version
-    - docker version
+      - terraform version
+      - docker version
 
 
   build:
@@ -48,6 +48,5 @@ phases:
 
   post_build:
     commands:
-      - echo Cleaning up container
-      - docker stop nginx-test || true
-      - docker rm nginx-test || true
+      - docker ps
+      - docker stop $(docker ps -q) || true
