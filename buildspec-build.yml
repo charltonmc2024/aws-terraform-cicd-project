@@ -12,7 +12,7 @@ phases:
       - echo Checking Docker
       - docker --version
       - echo Checking zip
-        - zip --version
+      - zip --version
 
   pre_build:
     commands:
@@ -23,7 +23,12 @@ phases:
 
   build:
     commands:
-      - echo Building Docker image
+      - echo Current directory
+      - pwd
+      - echo Files
+      - ls -la
+      - echo Directories
+      - find . -maxdepth 2 -type d
       - cd application
       - docker build -t nginx-app .
 
@@ -47,7 +52,7 @@ phases:
         }
         EOF
 
-        - zip deploy.zip Dockerrun.aws.json
+      - zip deploy.zip Dockerrun.aws.json
 
   post_build:
     commands:
