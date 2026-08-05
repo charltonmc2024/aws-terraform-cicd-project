@@ -86,7 +86,7 @@ resource "aws_codebuild_project" "build" {
 
     type = "CODEPIPELINE"
 
-    buildspec = file("${path.module}/../buildspec-build.yml")
+    buildspec = "buildspec-build.yml"
 
   }
 
