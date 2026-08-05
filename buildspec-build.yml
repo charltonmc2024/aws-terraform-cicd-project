@@ -7,24 +7,20 @@ env:
     ECR_REPOSITORY_URI: 691778449106.dkr.ecr.us-east-1.amazonaws.com/nginx-app-repo
 
 phases:
-
   install:
     commands:
       - echo Checking Docker
       - docker --version
       - echo Checking zip
-      - zip --version
-
+        - zip --version
 
   pre_build:
     commands:
       - echo Logging into Amazon ECR
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
 
-
   build:
     commands:
-
       - echo Building Docker image
       - cd application
       - docker build -t nginx-app .
@@ -36,30 +32,26 @@ phases:
       - |
         cat > Dockerrun.aws.json <<EOF
         {
-          "AWSEBDockerrunVersion": "1",
-          "Image": {
-            "Name": "$ECR_REPOSITORY_URI:latest",
-            "Update": "true"
-          },
-          "Ports": [
-            {
-              "ContainerPort": "80"
-            }
-          ]
+        "AWSEBDockerrunVersion": "1",
+        "Image": {
+        "Name": "$ECR_REPOSITORY_URI:latest",
+        "Update": "true"
+        },
+        "Ports": [
+        {
+          "ContainerPort": "80"
+        }
+        ]
         }
         EOF
 
-      - zip deploy.zip Dockerrun.aws.json
+        - zip deploy.zip Dockerrun.aws.json
 
-
-  post_build:
-    commands:
-
-      - echo Pushing Docker image to ECR
-      - docker push $ECR_REPOSITORY_URI:latest
-
+    post_build:
+      commands:
+        - echo Pushing Docker image to ECR
+        - docker push $ECR_REPOSITORY_URI:latest
 
 artifacts:
-
   files:
     - application/deploy.zip
