@@ -43,14 +43,15 @@ phases:
       - printf 'Terraform validation completed successfully\n' > test-output.txt
 
       - echo Building Docker image
-      - SRC_DIR="${CODEBUILD_SRC_DIR:-$PWD}"
-      - APP_DIR=""
-      - for candidate in "$SRC_DIR" "$SRC_DIR/application" "$SRC_DIR/src/application" "$SRC_DIR/src"; do
-        if [ -f "$candidate/Dockerfile" ]; then APP_DIR="$candidate"; break; fi
+      - |
+        SRC_DIR="${CODEBUILD_SRC_DIR:-$PWD}"
+        APP_DIR=""
+        for candidate in "$SRC_DIR" "$SRC_DIR/application" "$SRC_DIR/src/application" "$SRC_DIR/src"; do
+          if [ -f "$candidate/Dockerfile" ]; then APP_DIR="$candidate"; break; fi
         done
-      - if [ -z "$APP_DIR" ]; then echo "application directory missing"; exit 1; fi
-      - echo "Using application directory: $APP_DIR"
-      - docker build -t nginx-test -f "$APP_DIR/Dockerfile" "$APP_DIR"
+        if [ -z "$APP_DIR" ]; then echo "application directory missing"; exit 1; fi
+        echo "Using application directory: $APP_DIR"
+        docker build -t nginx-test -f "$APP_DIR/Dockerfile" "$APP_DIR"
 
       - echo Running NGINX container
       - docker run -d -p 8080:80 --name nginx-test nginx-test
