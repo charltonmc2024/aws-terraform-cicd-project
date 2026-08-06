@@ -66,4 +66,7 @@ phases:
 
 artifacts:
   files:
+    - application/**/*
+    - terraform/**/*
+    - buildspec-*.yml
     - test-output.txt
