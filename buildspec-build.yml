@@ -30,9 +30,14 @@ phases:
       - echo Files
       - ls -la "${CODEBUILD_SRC_DIR:-$PWD}"
       - echo Directories
-      - find "${CODEBUILD_SRC_DIR:-$PWD}" -maxdepth 2 -type d
-      - if [ -d "${CODEBUILD_SRC_DIR:-$PWD}/application" ]; then echo "application directory exists"; else echo "application directory missing"; exit 1; fi
-      - docker build -t nginx-app -f "${CODEBUILD_SRC_DIR:-$PWD}/application/Dockerfile" "${CODEBUILD_SRC_DIR:-$PWD}/application"
+      - find "${CODEBUILD_SRC_DIR:-$PWD}" -maxdepth 3 -type d | sort
+      - APP_DIR=""
+      - for candidate in "${CODEBUILD_SRC_DIR:-$PWD}" "${CODEBUILD_SRC_DIR:-$PWD}/application" "${CODEBUILD_SRC_DIR:-$PWD}/src/application" "${CODEBUILD_SRC_DIR:-$PWD}/src"; do
+        if [ -f "$candidate/Dockerfile" ]; then APP_DIR="$candidate"; break; fi
+        done
+      - if [ -z "$APP_DIR" ]; then echo "application directory missing"; exit 1; fi
+      - echo "Using application directory: $APP_DIR"
+      - docker build -t nginx-app -f "$APP_DIR/Dockerfile" "$APP_DIR"
 
       - echo Tagging Docker image
       - docker tag nginx-app:latest $ECR_REPOSITORY_URI:latest
