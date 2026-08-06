@@ -40,7 +40,7 @@ phases:
       - cd ..
 
       - echo Creating pipeline artifact
-      - printf 'Terraform validation completed successfully\n' > test-output.txt
+      - echo "Terraform validation completed successfully" > test-output.txt
 
       - echo Checking application directory
       - pwd
