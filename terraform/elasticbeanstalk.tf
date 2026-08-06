@@ -4,10 +4,12 @@
 
 resource "aws_elastic_beanstalk_application" "nginx" {
 
-  name        = "${var.app_name}-terraform-app"
-  description = "NGINX application deployed by Terraform CI/CD"
+  name = "${var.app_name}-terraform-app"
+
+  description = "NGINX Docker application deployed by Terraform CI/CD"
 
 }
+
 
 
 ##################################
@@ -18,11 +20,18 @@ resource "aws_elastic_beanstalk_environment" "nginx" {
 
   name = "${var.app_name}-production-env"
 
-  application = aws_elastic_beanstalk_application.nginx.name
+
+  application =
+    aws_elastic_beanstalk_application.nginx.name
 
 
-  # Docker platform
+
+  ##################################
+  # Docker Platform
+  ##################################
+
   platform_arn = "arn:aws:elasticbeanstalk:us-east-1::platform/Docker running on 64bit Amazon Linux 2023/4.13.4"
+
 
 
   ##################################
@@ -40,8 +49,41 @@ resource "aws_elastic_beanstalk_environment" "nginx" {
   }
 
 
+
   ##################################
-  # VPC Configuration
+  # EC2 Instance Type
+  ##################################
+
+  setting {
+
+    namespace = "aws:autoscaling:launchconfiguration"
+
+    name = "InstanceType"
+
+    value = "t2.micro"
+
+  }
+
+
+
+  ##################################
+  # EC2 Security Group
+  ##################################
+
+  setting {
+
+    namespace = "aws:autoscaling:launchconfiguration"
+
+    name = "SecurityGroups"
+
+    value = aws_security_group.eb_ec2.id
+
+  }
+
+
+
+  ##################################
+  # VPC
   ##################################
 
   setting {
@@ -55,8 +97,9 @@ resource "aws_elastic_beanstalk_environment" "nginx" {
   }
 
 
+
   ##################################
-  # EC2 Subnets
+  # Elastic Beanstalk EC2 Subnets
   ##################################
 
   setting {
@@ -71,6 +114,7 @@ resource "aws_elastic_beanstalk_environment" "nginx" {
     ])
 
   }
+
 
 
   ##################################
@@ -91,8 +135,9 @@ resource "aws_elastic_beanstalk_environment" "nginx" {
   }
 
 
+
   ##################################
-  # Environment Type
+  # Load Balanced Environment
   ##################################
 
   setting {
@@ -106,6 +151,23 @@ resource "aws_elastic_beanstalk_environment" "nginx" {
   }
 
 
+
+  ##################################
+  # ALB Security Group
+  ##################################
+
+  setting {
+
+    namespace = "aws:elbv2:loadbalancer"
+
+    name = "SecurityGroups"
+
+    value = aws_security_group.eb_alb.id
+
+  }
+
+
+
   ##################################
   # Health Check
   ##################################
@@ -117,6 +179,69 @@ resource "aws_elastic_beanstalk_environment" "nginx" {
     name = "Application Healthcheck URL"
 
     value = "/"
+
+  }
+
+
+
+  ##################################
+  # Rolling Deployment
+  ##################################
+
+  setting {
+
+    namespace = "aws:elasticbeanstalk:command"
+
+    name = "DeploymentPolicy"
+
+    value = "Rolling"
+
+  }
+
+
+
+  ##################################
+  # Enable CloudWatch Logs
+  ##################################
+
+  setting {
+
+    namespace = "aws:elasticbeanstalk:cloudwatch:logs"
+
+    name = "StreamLogs"
+
+    value = "true"
+
+  }
+
+
+
+  ##################################
+  # Log Retention
+  ##################################
+
+  setting {
+
+    namespace = "aws:elasticbeanstalk:cloudwatch:logs"
+
+    name = "DeleteOnTerminate"
+
+    value = "false"
+
+  }
+
+
+
+  ##################################
+  # Prevent Terraform from managing app versions
+  # CodePipeline controls versions
+  ##################################
+
+  lifecycle {
+
+    ignore_changes = [
+      version_label
+    ]
 
   }
 
