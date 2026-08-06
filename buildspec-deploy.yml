@@ -4,8 +4,8 @@ version: 0.2
 env:
   variables:
     AWS_REGION: us-east-1
-    EB_APPLICATION_NAME: nginx-terraform-app
-    EB_ENVIRONMENT_NAME: nginx-production-env
+    EB_APPLICATION_NAME: nginx-app-terraform-app
+    EB_ENVIRONMENT_NAME: nginx-app-production-env
 
 phases:
   install:
@@ -20,11 +20,12 @@ phases:
   build:
     commands:
       - echo Uploading deployment package
-
+      - ls -la
+      - if [ ! -f deploy.zip ]; then echo "deploy.zip not found"; exit 1; fi
       - aws s3 cp deploy.zip s3://$CODEPIPELINE_ARTIFACT_BUCKET/deploy.zip
 
       - echo Creating Elastic Beanstalk application version
-      - aws elasticbeanstalk create-application-version --application-name $EB_APPLICATION_NAME --version-label $CODEBUILD_BUILD_NUMBER --source-bundle S3Bucket=$CODEPIPELINE_ARTIFACT_BUCKET,S3Key=deploy.zip
+      - aws elasticbeanstalk create-application-version --application-name "$EB_APPLICATION_NAME" --version-label "$CODEBUILD_BUILD_NUMBER" --source-bundle S3Bucket="$CODEPIPELINE_ARTIFACT_BUCKET",S3Key=deploy.zip
 
       - echo Updating Elastic Beanstalk environment
-      - aws elasticbeanstalk update-environment --environment-name $EB_ENVIRONMENT_NAME --version-label $CODEBUILD_BUILD_NUMBER
+      - aws elasticbeanstalk update-environment --environment-name "$EB_ENVIRONMENT_NAME" --version-label "$CODEBUILD_BUILD_NUMBER"
