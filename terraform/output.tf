@@ -51,10 +51,11 @@ output "github_connection_arn" {
   value       = aws_codestarconnections_connection.github_connection.arn
 }
 
-output "eb_bucket_name" {
+output "s3_artifacts_bucket_name" {
 
   description = "S3 bucket name used to store Elastic Beanstalk deployment packages"
 
   value = aws_s3_bucket.codepipeline_artifact.bucket
 
 }
+
