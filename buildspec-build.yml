@@ -25,12 +25,14 @@ phases:
     commands:
       - echo Current directory
       - pwd
+      - echo Source directory
+      - echo "${CODEBUILD_SRC_DIR:-$PWD}"
       - echo Files
-      - ls -la
+      - ls -la "${CODEBUILD_SRC_DIR:-$PWD}"
       - echo Directories
-      - find . -maxdepth 2 -type d
-      - if [ -d application ]; then echo "application directory exists"; else echo "application directory missing"; exit 1; fi
-      - docker build -t nginx-app -f application/Dockerfile application
+      - find "${CODEBUILD_SRC_DIR:-$PWD}" -maxdepth 2 -type d
+      - if [ -d "${CODEBUILD_SRC_DIR:-$PWD}/application" ]; then echo "application directory exists"; else echo "application directory missing"; exit 1; fi
+      - docker build -t nginx-app -f "${CODEBUILD_SRC_DIR:-$PWD}/application/Dockerfile" "${CODEBUILD_SRC_DIR:-$PWD}/application"
 
       - echo Tagging Docker image
       - docker tag nginx-app:latest $ECR_REPOSITORY_URI:latest

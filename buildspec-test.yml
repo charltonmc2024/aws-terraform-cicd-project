@@ -43,7 +43,9 @@ phases:
       - printf 'Terraform validation completed successfully\n' > test-output.txt
 
       - echo Building Docker image
-      - docker build -t nginx-test -f application/Dockerfile application
+      - SRC_DIR="${CODEBUILD_SRC_DIR:-$PWD}"
+      - if [ -d "$SRC_DIR/application" ]; then echo "application directory exists"; else echo "application directory missing"; exit 1; fi
+      - docker build -t nginx-test -f "$SRC_DIR/application/Dockerfile" "$SRC_DIR/application"
 
       - echo Running NGINX container
       - docker run -d -p 8080:80 --name nginx-test nginx-test
