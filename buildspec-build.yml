@@ -29,8 +29,8 @@ phases:
       - ls -la
       - echo Directories
       - find . -maxdepth 2 -type d
-      - cd application
-      - docker build -t nginx-app .
+      - if [ -d application ]; then echo "application directory exists"; else echo "application directory missing"; exit 1; fi
+      - docker build -t nginx-app -f application/Dockerfile application
 
       - echo Tagging Docker image
       - docker tag nginx-app:latest $ECR_REPOSITORY_URI:latest
