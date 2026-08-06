@@ -54,7 +54,7 @@ phases:
 
       - echo Creating deployment zip
       - cd application
-      - zip deploy.zip Dockerrun.aws.json
+      - zip ../deploy.zip Dockerrun.aws.json
       - cd ..
 
   post_build:
@@ -64,4 +64,4 @@ phases:
 
 artifacts:
   files:
-    - application/deploy.zip
+    - deploy.zip
