@@ -8,36 +8,30 @@ env:
     EB_ENVIRONMENT_NAME: nginx-production-env
 
 phases:
-
   install:
     commands:
       - echo Checking AWS CLI
       - aws --version
 
-
   pre_build:
     commands:
       - echo Starting Elastic Beanstalk deployment
 
-
   build:
     commands:
-
       - echo Uploading deployment package
 
       - aws s3 cp deploy.zip s3://$CODEPIPELINE_ARTIFACT_BUCKET/deploy.zip
 
-
       - echo Creating Elastic Beanstalk application version
-
-      - aws elasticbeanstalk create-application-version \
+      - |
+        aws elasticbeanstalk create-application-version \
           --application-name $EB_APPLICATION_NAME \
           --version-label $CODEBUILD_BUILD_NUMBER \
           --source-bundle S3Bucket=$CODEPIPELINE_ARTIFACT_BUCKET,S3Key=deploy.zip
 
-
       - echo Updating Elastic Beanstalk environment
-
-      - aws elasticbeanstalk update-environment \
+      - |
+        aws elasticbeanstalk update-environment \
           --environment-name $EB_ENVIRONMENT_NAME \
           --version-label $CODEBUILD_BUILD_NUMBER
