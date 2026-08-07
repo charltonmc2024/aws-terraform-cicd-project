@@ -41,8 +41,7 @@ resource "aws_iam_role_policy_attachment" "eb_web_tier" {
 
   role = aws_iam_role.eb_ec2_role.name
 
-  policy_arn =
-    "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier"
+  policy_arn = "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier"
 
 }
 
@@ -55,8 +54,7 @@ resource "aws_iam_role_policy_attachment" "eb_ecr_read" {
 
   role = aws_iam_role.eb_ec2_role.name
 
-  policy_arn =
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 
 }
 
@@ -69,8 +67,7 @@ resource "aws_iam_role_policy_attachment" "eb_health" {
 
   role = aws_iam_role.eb_ec2_role.name
 
-  policy_arn =
-    "arn:aws:iam::aws:policy/AWSElasticBeanstalkEnhancedHealth"
+  policy_arn = "arn:aws:iam::aws:policy/AWSElasticBeanstalkEnhancedHealth"
 
 }
 
@@ -89,14 +86,14 @@ resource "aws_iam_instance_profile" "eb_ec2_profile" {
 
 
 
+
 ##################################
-# CodeBuild Role
+# ECS Execution Role
 ##################################
 
-resource "aws_iam_role" "codebuild_role" {
+resource "aws_iam_role" "ecs_execution_role" {
 
-  name = "${var.app_name}-codebuild-role"
-
+  name = "${var.app_name}-ecs-execution-role"
 
   assume_role_policy = jsonencode({
 
@@ -110,7 +107,7 @@ resource "aws_iam_role" "codebuild_role" {
 
         Principal = {
 
-          Service = "codebuild.amazonaws.com"
+          Service = "ecs-tasks.amazonaws.com"
 
         }
 
@@ -125,6 +122,49 @@ resource "aws_iam_role" "codebuild_role" {
 }
 
 
+resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy" {
+
+  role = aws_iam_role.ecs_execution_role.name
+
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+
+}
+
+
+##################################
+# ECS Task Role
+##################################
+
+resource "aws_iam_role" "ecs_task_role" {
+
+  name = "${var.app_name}-ecs-task-role"
+
+  assume_role_policy = jsonencode({
+
+    Version = "2012-10-17"
+
+    Statement = [
+
+      {
+
+        Effect = "Allow"
+
+        Principal = {
+
+          Service = "ecs-tasks.amazonaws.com"
+
+        }
+
+        Action = "sts:AssumeRole"
+
+      }
+
+    ]
+
+  })
+
+}
+
 
 ##################################
 # CodeBuild ECR Access
@@ -134,8 +174,7 @@ resource "aws_iam_role_policy_attachment" "codebuild_ecr" {
 
   role = aws_iam_role.codebuild_role.name
 
-  policy_arn =
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 
 }
 
@@ -149,8 +188,7 @@ resource "aws_iam_role_policy_attachment" "codebuild_eb" {
 
   role = aws_iam_role.codebuild_role.name
 
-  policy_arn =
-    "arn:aws:iam::aws:policy/AWSElasticBeanstalkFullAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AWSElasticBeanstalkFullAccess"
 
 }
 
@@ -164,8 +202,7 @@ resource "aws_iam_role_policy_attachment" "codebuild_logs" {
 
   role = aws_iam_role.codebuild_role.name
 
-  policy_arn =
-    "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 
 }
 
@@ -216,8 +253,7 @@ resource "aws_iam_role_policy_attachment" "codepipeline_policy" {
 
   role = aws_iam_role.codepipeline_role.name
 
-  policy_arn =
-    "arn:aws:iam::aws:policy/AWSCodePipeline_FullAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCodePipeline_FullAccess"
 
 }
 
@@ -231,8 +267,7 @@ resource "aws_iam_role_policy_attachment" "codepipeline_s3_policy" {
 
   role = aws_iam_role.codepipeline_role.name
 
-  policy_arn =
-    "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 
 }
 

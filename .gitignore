@@ -2,13 +2,13 @@
 .terraform/
 *.tfstate
 *.tfstate.*
-crash.log
-
-# Terraform plan files
 *.tfplan
+crash.log
+.terraform.lock.hcl
 
 # Environment files
 *.tfvars
+*.tfvars.json
 
 # OS files
 .DS_Store

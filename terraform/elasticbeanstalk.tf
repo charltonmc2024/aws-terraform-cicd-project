@@ -21,8 +21,7 @@ resource "aws_elastic_beanstalk_environment" "nginx" {
   name = "${var.app_name}-production-env"
 
 
-  application =
-    aws_elastic_beanstalk_application.nginx.name
+  application = aws_elastic_beanstalk_application.nginx.name
 
 
 
